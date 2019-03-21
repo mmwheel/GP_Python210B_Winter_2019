@@ -20,7 +20,6 @@ class Donor(object):
     def __str__(self):
         return '{}: {}'.format(self.name, str(self.donations).strip('[]'))
 
-
     def add_donation(self, amount):
         # Function to add a donation to the list of donations for this donor
         self.donations.append(amount)
@@ -32,7 +31,6 @@ class Donor(object):
                              \n Sincerely,"
 
         return thank_you_text.format(self.name, self.donations[-1])
-
 
     @property
     def name(self):
@@ -47,10 +45,21 @@ class Donor(object):
     def total_donations(self):
         return sum(self.donations)
 
-
     @property
     def average_donations(self):
         return sum(self.donations)/len(self.donations)
+
+    def create_report(self):
+        """
+        Create report summary for each donor
+        """
+        total = self.total_donations
+        avg = self.average_donations
+        num = len(self.donations)
+
+        donor_report = [self.name, float(total), int(num), float(avg)]
+
+        return donor_report
 
 
 class DonorCollection(object):
@@ -62,49 +71,46 @@ class DonorCollection(object):
         self.donor_dict = {}
 
     def add_donor(self, donor_object):
-        """ Look to see if donor with name already exists, if exists add donations to donor,
-        if not add donor and donation to data structure """
 
-        if donor_object.name in self.donor_dict.keys():
-            value = str(donor_object.donations).strip('[]')
-            value = int(value)
-            self.donor_dict[donor_object.name].append(value)
-            return self.donor_dict
+        """ Add donor and donation to data structure """
+        self.donor_dict[donor_object.name] = donor_object
 
-        else:
-            self.donor_dict[donor_object.name] = donor_object.donations
-            return self.donor_dict
+    def add_donation(self, name, amount):
+
+        """ Add donor and donation to data structure """
+        self.donor_dict[name].add_donation(amount)
 
     def print_donors(self):
         for k in self.donor_dict.keys():
             print(k)
 
-    def create_report(self):
-        # create a new list with donor names, total donation, number of donations and average donations
-        donor_list = list(self.donor_dict.items())
-
-        # Use comprehension to create a new list
-        donor_summary = [[donor[0], float(sum(donor[1])), int(len(donor[1])), float(sum(donor[1])) / int(len(donor[1]))]
-                         for donor in donor_list]
-
-        def sort_key(donor_summary):
-            return donor_summary[1]
-
-        sorted_donor_summary = (sorted(donor_summary, key=sort_key, reverse=True))
-        return sorted_donor_summary
-
     def display_report_summary(self):
-        sorted_summary = self.create_report()
+        """
+        Generates a report summary for donors in dictionary
+        I am sure there is a better way to do this
+        """
+
+        report_summary = []
+
+        for key, item in self.donor_dict.items():
+            report_summary.append(item.create_report())
+
+        #def sort_key(report_summary):
+        #    return report_summary[1]
+
+        #sorted_summary = (sorted(report_summary, key=sort_key, reverse=True))
+
+
         table_header = ["Name", "Total Given", "Numb of Gifts", "Average Gift"]
-        sorted_summary.insert(0, table_header)
+        report_summary.insert(0, table_header)
         dash = '-' * 70
-        for i in range(len(sorted_summary)):
+        for i in range(len(report_summary)):
             if i == 0:
                 print(dash)
-                print('{:20} | {:>10s} | {:>15s} | {:>15s}'.format(sorted_summary[i][0], sorted_summary[i][1],
-                                                                   sorted_summary[i][2], sorted_summary[i][3]))
+                print('{:20} | {:>10s} | {:>15s} | {:>15s}'.format(report_summary[i][0], report_summary[i][1],
+                                                                   report_summary[i][2], report_summary[i][3]))
                 print(dash)
             else:
-                print('{:20} ${:>10.1f}{:>20d} ${:>16.1f}'.format(sorted_summary[i][0], sorted_summary[i][1],
-                                                                  sorted_summary[i][2], sorted_summary[i][3]))
+                print('{:20} ${:>10.1f}{:>20d} ${:>16.1f}'.format(report_summary[i][0], report_summary[i][1],
+                                                                  report_summary[i][2], report_summary[i][3]))
 

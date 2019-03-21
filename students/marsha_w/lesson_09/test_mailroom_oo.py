@@ -6,12 +6,12 @@ Dev: Marsha Wheeler
 Date: 03/17/19
 '''
 
-# import * is often bad form, but makes it easier to test everything in a module.
 from donor_models import Donor
+from donor_models import DonorCollection
 
-########
-# Step 1
-########
+########################
+# Step1 Test Donor Class
+########################
 
 def test_init():
     """
@@ -48,12 +48,58 @@ def test_donor_entry():
     assert ('20') in entry
 
 def test_thank_you():
+    """
+    This tests whether thank you text matches expectation
+    """
+
     d = Donor('Marsha Wheeler', 10)
 
     expected_text = "Dear Marsha Wheeler, \n We are writing to thank you for your generous donation of a total $10.00 to our organization. \
                              \n Sincerely,"
 
     assert expected_text == d.send_thank_you()
+
+def test_total_donations():
+    d = Donor('Marsha Wheeler', 10, 20)
+
+    expected_total = 30
+
+    assert expected_total == d.total_donations
+
+def test_average_donations():
+    d = Donor('Marsha Wheeler', 10, 20)
+
+    expected_average = 15
+
+    assert expected_average == d.average_donations
+
+
+##################################
+# Step2 Test DonorCollection Class
+##################################
+
+
+def test_add_donor():
+    """ This tests whether donors are added to the dictionary
+    """
+    d1 = Donor('Marsha Wheeler', 10)
+    d2 = Donor('Andrew Magis', 20)
+
+    dc = DonorCollection()
+
+    dc.add_donor(d1)
+    dc.add_donor(d2)
+
+    print(dc.donor_dict)
+
+    assert 'Marsha Wheeler' in dc.donor_dict.keys()
+    assert 'Andrew Magis' in dc.donor_dict.keys()
+    assert [10] in dc.donor_dict.values()
+    assert [20] in dc.donor_dict.values()
+
+
+
+
 
 
 
